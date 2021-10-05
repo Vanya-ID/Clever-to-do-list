@@ -4,7 +4,7 @@ https://docs.google.com/document/d/1heFuihWrsw14bCpUdr6fla9ysqE6IrsobSMKAOpBiKA/
 
 ## How to run the app
 
-Запускатете и работает как швейцарские часы
+Запускаете и работает как швейцарские часы
 
 ## Database snapshot
 
