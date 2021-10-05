@@ -1,0 +1,71 @@
+.one_day_block {
+    border: 2px solid #ffffff;
+    box-shadow: 7px 7px 5px #8b8787;
+    border-radius: 14px;
+    margin: 16px;
+    min-width: 160px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    transition: 0.4s;
+    cursor: pointer;
+
+    &:hover {
+        border: 2px solid green;
+        box-shadow: 7px 7px 5px green;
+        transform: translateY(-15px);
+    }
+}
+
+@mixin day_block($brC, $box) {
+    border: 2px solid $brC;
+    box-shadow: 7px 7px 5px $box;
+}
+
+.today_block {
+    @include day_block(red, red);
+    transition: 0.4s;
+
+    &:hover {
+        @include day_block(green, green);
+    }
+}
+
+.selected {
+    @include day_block(green, green);
+    transform: translateY(-10px);
+}
+
+.dayBlockWrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@mixin light($brC) {
+    margin: 0 auto;
+    background-color: $brC;
+    min-width: 15px;
+    min-height: 15px;
+    border-radius: 50%;
+}
+
+.wrapper {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 70px;
+    bottom: -10px;
+}
+
+.green {
+    @include light(green);
+}
+
+.red {
+    @include light(red);
+}

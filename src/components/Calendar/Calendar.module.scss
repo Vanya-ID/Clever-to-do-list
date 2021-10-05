@@ -1,0 +1,51 @@
+.homePage_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .calendar_title {
+    width: 100vw;
+    height: 80px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-end;
+    padding-right: 10px;
+
+    span {
+      &::first-letter {
+        text-transform: uppercase;
+      }
+
+      min-width: 83px;
+      text-align: center;
+    }
+
+    @media screen and (max-width: 800px) {
+      width: 780px;
+    }
+  }
+
+  .days_wrapper {
+    margin-top: 54px;
+    padding-bottom: 60px;
+    display: flex;
+    width: 100vw;
+    overflow-x: auto;
+    align-items: center;
+    @media screen and (max-width: 800px) {
+      width: 780px;
+    }
+  }
+}
+
+.arrow {
+  height: 40px;
+  width: 120px;
+  cursor: pointer;
+  transition: all 0.6s;
+  margin: 20px;
+
+  &:hover {
+    transform: rotateX(180deg);
+  }
+}
