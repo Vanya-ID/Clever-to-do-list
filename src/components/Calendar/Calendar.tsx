@@ -42,25 +42,16 @@ const Calendar: React.FC<PagePropsType> = React.memo(() => {
     const arrayOfDates = new Array(getDaysInMonth()).fill(0).map((_, i) => `${year.toString()}-${`0${month}`.slice(-2)}-${`0${i + 1}`.slice(-2)}`)
 
     const dayBlockItems = arrayOfDates.map((date) => {
-        let redPin
-        let greenPin
         const dayTask = tasksFromDate[date]
-        if (dayTask) {
-            redPin = Object.values(dayTask).some((el: TasksType) => !el.completed)
-            greenPin = Object.values(dayTask).some((el: TasksType) => el.completed)
+        return {
+            selectedDay: dayNumber,
+            redPin: dayTask && Object.values(dayTask).some((el: TasksType) => !el.completed),
+            greenPin: dayTask && Object.values(dayTask).some((el: TasksType) => el.completed),
+            userId: userId,
+            month: month,
+            setDayNumber: setDayNumber,
+            date: date,
         }
-        return (
-            <DayBlock
-                selectedDay={dayNumber}
-                redPin={redPin ?? false}
-                greenPin={greenPin ?? false}
-                userId={userId}
-                month={month}
-                setDayNumber={setDayNumber}
-                key={date}
-                date={date}
-            />
-        )
     })
     return (
         <div className={s.homePage_wrapper}>
@@ -80,7 +71,18 @@ const Calendar: React.FC<PagePropsType> = React.memo(() => {
                     way={-1}
                     imgSrc={leftArrow}
                 />
-                {dayBlockItems}
+                {dayBlockItems.map(item => (
+                    <DayBlock
+                        selectedDay={item.selectedDay}
+                        redPin={item.redPin}
+                        greenPin={item.greenPin}
+                        userId={item.userId}
+                        month={item.month}
+                        setDayNumber={item.setDayNumber}
+                        key={item.date}
+                        date={item.date}
+                    />
+                ))}
                 <Arrow
                     year={year}
                     setYear={setYear}
