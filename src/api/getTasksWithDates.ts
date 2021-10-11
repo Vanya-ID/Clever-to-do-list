@@ -1,9 +1,9 @@
 import firebase from 'firebase/compat'
-import { tasksType } from '../components/Block/TaskBar/Taskbar'
+import {TasksFromDateType} from "../components/Calendar/Calendar";
 
 export const getTasksWithDates = async (
     userId: string,
-    setTasks: (value: tasksType | []) => void
+    setTasks: (value: TasksFromDateType) => void
 ) => {
     let tasks
 
@@ -14,7 +14,7 @@ export const getTasksWithDates = async (
             tasks = snap.val()
             setTasks(tasks)
         } else {
-            setTasks([])
+            setTasks({})
         }
     })
     return tasks

@@ -1,36 +1,32 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import s from '../Calendar/Calendar.module.scss'
+import {december, january, maxImpossibleMonth, minImpossibleMonth} from "../../constants";
+import {ArrowPropsType} from "./Arrow.type";
 
-type ArrowPropsType = {
-    imgSrc: string
-    way: number
-    setMonth: (val: number) => void
-    month: number
-    setYear: (val: number) => void
-    year: number
-}
 
-const Arrow: React.FC<ArrowPropsType> = React.memo((props) => {
-    const { imgSrc, way, setMonth, setYear, month, year } = props
+const Arrow: React.FC<ArrowPropsType> = React.memo(({imgSrc, way, setMonth, setYear, month, year}) => {
+    const prevYear = year - 1;
+    const nextYear = year + 1;
 
-    const changeMonth = () => {
-        if (month + way === 0) {
-            setMonth(12)
-            setYear(year - 1)
-        } else if (month + way === 13) {
-            setYear(year + 1)
-            setMonth(1)
+
+    const changeMonth = useCallback(() => {
+        if (month + way === minImpossibleMonth) {
+            setMonth(december)
+            setYear(prevYear)
+        } else if (month + way === maxImpossibleMonth) {
+            setYear(nextYear)
+            setMonth(january)
         } else {
             setMonth(month + way)
         }
-    }
+    }, [month, nextYear, prevYear, way, setMonth, setYear])
 
     return (
         <img
             onClick={changeMonth}
             className={s.arrow}
             src={imgSrc}
-            alt="Стрела"
+            alt="Arrow"
         />
     )
 })

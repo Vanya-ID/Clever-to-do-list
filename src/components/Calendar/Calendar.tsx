@@ -1,17 +1,28 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import IPageProps from '../../interfaces/page'
-import DayBlock from '../Block/DayBlock/DayBlock'
-import Taskbar from '../Block/TaskBar/Taskbar'
-import { CURRENT_YEAR, findMonthName, TODAY } from '../../constants'
+import React, {useCallback, useEffect, useState} from 'react'
+import {Link} from 'react-router-dom'
+import PagePropsType from '../../interfaces/page'
+import DayBlock from '../DayBlock/DayBlock'
 import s from './Calendar.module.scss'
 import Arrow from '../Arrow/Arrow'
-import { getUserId } from '../../api/authentication'
-import { getTasksWithDates } from '../../api/getTasksWithDates'
+import {getUserId} from '../../api/authentication'
+import {getTasksWithDates} from '../../api/getTasksWithDates'
+import {CURRENT_YEAR, TODAY} from "../../constants";
+import {findMonthName} from "../../utils/findMonthName";
+import leftArrow from '../../assets/leftArrow.png'
+import rightArrow from '../../assets/rightArrow.png'
+import {TasksType} from "../TaskBar/Taskbar.type";
+import Taskbar from "../TaskBar/Taskbar";
 
-const Calendar: React.FC<IPageProps> = React.memo(() => {
+export type TasksFromDateType = {
+    [dateKey: string]: {
+        [key: string]: TasksType
+    }
+}
+
+const Calendar: React.FC<PagePropsType> = React.memo(() => {
     const [userId, setUserId] = useState<string>('')
-    const [tasksFromDate, setTasksFromDate] = useState<any>({})
+
+    const [tasksFromDate, setTasksFromDate] = useState<TasksFromDateType>({})
 
     useEffect(() => {
         getUserId(setUserId)
@@ -26,22 +37,17 @@ const Calendar: React.FC<IPageProps> = React.memo(() => {
 
     const [dayNumber, setDayNumber] = useState<number>(TODAY)
 
-    const getDaysInMonth = () => new Date(year, month, 0).getDate()
+    const getDaysInMonth = useCallback(() => new Date(year, month, 0).getDate(), [month, year])
 
-    const arrayOfDates = []
-    for (let i = 1; i <= getDaysInMonth(); i++) {
-        arrayOfDates.push(
-            `${year.toString()}-${`0${month}`.slice(-2)}-${`0${i}`.slice(-2)}`
-        )
-    }
+    const arrayOfDates = new Array(getDaysInMonth()).fill(0).map((_, i) => `${year.toString()}-${`0${month}`.slice(-2)}-${`0${i + 1}`.slice(-2)}`)
 
     const dayBlockItems = arrayOfDates.map((date) => {
         let redPin
         let greenPin
         const dayTask = tasksFromDate[date]
         if (dayTask) {
-            redPin = Object.values(dayTask).some((el: any) => !el.completed)
-            greenPin = Object.values(dayTask).some((el: any) => el.completed)
+            redPin = Object.values(dayTask).some((el: TasksType) => !el.completed)
+            greenPin = Object.values(dayTask).some((el: TasksType) => el.completed)
         }
         return (
             <DayBlock
@@ -72,7 +78,7 @@ const Calendar: React.FC<IPageProps> = React.memo(() => {
                     month={month}
                     setMonth={setMonth}
                     way={-1}
-                    imgSrc="leftArrow.png"
+                    imgSrc={leftArrow}
                 />
                 {dayBlockItems}
                 <Arrow
@@ -81,11 +87,11 @@ const Calendar: React.FC<IPageProps> = React.memo(() => {
                     month={month}
                     setMonth={setMonth}
                     way={1}
-                    imgSrc="rightArrow.png"
+                    imgSrc={rightArrow}
                 />
             </div>
             {dayNumber && (
-                <Taskbar userId={userId} month={month} dayNumber={dayNumber} />
+                <Taskbar userId={userId} month={month} dayNumber={dayNumber}/>
             )}
         </div>
     )

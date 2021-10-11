@@ -1,4 +1,4 @@
-export default interface IRoute {
+export default interface RouteType {
     path: string
     exact: boolean
     component: any

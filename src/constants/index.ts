@@ -24,7 +24,13 @@ export const LIST_OF_MONTHS = {
     December: 12,
 }
 
-type MonthsNameType =
+export const minImpossibleMonth = 0;
+export const maxImpossibleMonth = 13;
+export const january = 1;
+export const december = 12;
+
+
+export type MonthsNameType =
     | 'January'
     | 'February'
     | 'March'
@@ -38,8 +44,5 @@ type MonthsNameType =
     | 'November'
     | 'December'
 
-export const findMonthName = (monthNum: number) => {
-    return Object.keys(LIST_OF_MONTHS).find(
-        (m) => LIST_OF_MONTHS[m as MonthsNameType] === monthNum
-    )
-}
+
+

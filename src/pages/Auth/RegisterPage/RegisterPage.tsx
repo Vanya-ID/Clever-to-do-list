@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
-import { Button, FormGroup, Input } from 'reactstrap'
-import AuthContainer from '../../components/AuthContainer/AuthContainer'
-import ErrorText from '../../components/ErrorText/ErrorText'
-import { auth } from '../../config/firebase'
-import IPageProps from '../../interfaces/page'
+import React, {ChangeEvent, useCallback, useState} from 'react'
+import {Link, useHistory} from 'react-router-dom'
+import {Button, FormGroup, Input} from 'reactstrap'
+import AuthContainer from '../../../components/AuthContainer/AuthContainer'
+import ErrorText from '../../../components/ErrorText/ErrorText'
+import {auth} from '../../../config/firebase'
+import PagePropsType from '../../../interfaces/page'
 
-const RegisterPage: React.FC<IPageProps> = () => {
+const RegisterPage: React.FC<PagePropsType> = React.memo(() => {
     const [registering, setRegistering] = useState<boolean>(false)
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
@@ -15,7 +15,7 @@ const RegisterPage: React.FC<IPageProps> = () => {
 
     const history = useHistory()
 
-    const signUpWithEmailAndPassword = () => {
+    const signUpWithEmailAndPassword = useCallback(async () => {
         if (password !== confirm) {
             setError('Please make sure your passwords match.')
             return
@@ -24,17 +24,23 @@ const RegisterPage: React.FC<IPageProps> = () => {
         if (error !== '') setError('')
 
         setRegistering(true)
+        try {
+            await auth.createUserWithEmailAndPassword(email, password)
+            history.push('/')
+        } catch (error) {
+            let errorMessage = "Failed to do something exceptional";
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+            setError(errorMessage)
+            setRegistering(false)
+        }
 
-        auth.createUserWithEmailAndPassword(email, password)
-            .then(() => {
-                history.push('/login')
-            })
-            .catch((error) => {
-                error.code = error.code.replace(/firebase: /gi,'').split('.', 1).join('')
-                setError(error.code)
-                setRegistering(false)
-            })
-    }
+    }, [confirm, email, error, history, password])
+
+    const emailChangeHandler = useCallback((event: ChangeEvent<HTMLInputElement>) => setEmail(event.target.value), [])
+    const passwordChangeHandler = useCallback((event: ChangeEvent<HTMLInputElement>) => setPassword(event.target.value), [])
+    const confirmChangeHandler = useCallback((event: ChangeEvent<HTMLInputElement>) => setConfirm(event.target.value), [])
 
     return (
         <AuthContainer header="Register">
@@ -44,7 +50,7 @@ const RegisterPage: React.FC<IPageProps> = () => {
                     name="email"
                     id="email"
                     placeholder="Email Address"
-                    onChange={(event) => setEmail(event.target.value)}
+                    onChange={emailChangeHandler}
                     value={email}
                 />
             </FormGroup>
@@ -55,7 +61,7 @@ const RegisterPage: React.FC<IPageProps> = () => {
                     name="password"
                     id="password"
                     placeholder="Enter Password"
-                    onChange={(event) => setPassword(event.target.value)}
+                    onChange={passwordChangeHandler}
                     value={password}
                 />
             </FormGroup>
@@ -66,7 +72,7 @@ const RegisterPage: React.FC<IPageProps> = () => {
                     name="confirm"
                     id="confirm"
                     placeholder="Confirm Password"
-                    onChange={(event) => setConfirm(event.target.value)}
+                    onChange={confirmChangeHandler}
                     value={confirm}
                 />
             </FormGroup>
@@ -74,7 +80,7 @@ const RegisterPage: React.FC<IPageProps> = () => {
                 disabled={registering}
                 color="success"
                 block
-                onClick={() => signUpWithEmailAndPassword()}
+                onClick={signUpWithEmailAndPassword}
             >
                 Sign Up
             </Button>
@@ -83,9 +89,9 @@ const RegisterPage: React.FC<IPageProps> = () => {
                     Already have an account? <Link to="/login">Login.</Link>
                 </p>
             </small>
-            <ErrorText error={error} />
+            <ErrorText error={error}/>
         </AuthContainer>
     )
-}
+})
 
 export default RegisterPage

@@ -1,11 +1,11 @@
-import IRoute from '../interfaces/route'
-import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage'
-import LoginPage from '../pages/auth/LoginPage'
-import LogoutPage from '../pages/auth/LogoutPage'
-import RegisterPage from '../pages/auth/RegisterPage'
+import RouteType from '../interfaces/route'
+import ForgotPasswordPage from '../pages/Auth/ForgotPasswordPage/ForgotPasswordPage'
+import LoginPage from '../pages/Auth/LoginPage/LoginPage'
+import LogoutPage from '../pages/Auth/LogoutPage/LogoutPage'
+import RegisterPage from '../pages/Auth/RegisterPage/RegisterPage'
 import Calendar from '../components/Calendar/Calendar'
 
-const routes: IRoute[] = [
+const routes: RouteType[] = [
     {
         path: '/',
         exact: true,

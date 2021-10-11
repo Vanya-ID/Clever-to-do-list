@@ -1,14 +1,12 @@
-import React, { useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
-import { Button, FormGroup, Input } from 'reactstrap'
-import firebase from 'firebase/compat'
-import AuthContainer from '../../components/AuthContainer/AuthContainer'
-import ErrorText from '../../components/ErrorText/ErrorText'
-import { auth } from '../../config/firebase'
-import IPageProps from '../../interfaces/page'
-import { SignInWithSocialMedia } from './modules'
+import React, {ChangeEvent, useCallback, useState} from 'react'
+import {Link, useHistory} from 'react-router-dom'
+import {Button, FormGroup, Input} from 'reactstrap'
+import AuthContainer from '../../../components/AuthContainer/AuthContainer'
+import ErrorText from '../../../components/ErrorText/ErrorText'
+import {auth} from '../../../config/firebase'
+import PagePropsType from '../../../interfaces/page'
 
-const LoginPage: React.FC<IPageProps> = (props) => {
+const LoginPage: React.FC<PagePropsType> = React.memo(() => {
     const [authenticating, setAuthenticating] = useState<boolean>(false)
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
@@ -16,20 +14,25 @@ const LoginPage: React.FC<IPageProps> = (props) => {
 
     const history = useHistory()
 
-    const signInWithEmailAndPassword = () => {
+    const signInWithEmailAndPassword = useCallback(async () => {
         if (error !== '') setError('')
-
         setAuthenticating(true)
+        try {
+            await auth.signInWithEmailAndPassword(email, password)
+            history.push('/')
+        } catch (error) {
+            let errorMessage = "Failed to do something exceptional";
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+            setAuthenticating(false)
+            setError(errorMessage)
+        }
 
-        auth.signInWithEmailAndPassword(email, password)
-            .then((result) => {
-                history.push('/')
-            })
-            .catch((error) => {
-                setAuthenticating(false)
-                setError(error.message)
-            })
-    }
+    }, [email, password, history, error])
+
+    const emailChangeHandler = useCallback((event: ChangeEvent<HTMLInputElement>) => setEmail(event.target.value), [])
+    const passwordChangeHandler = useCallback((event: ChangeEvent<HTMLInputElement>) => setPassword(event.target.value), [])
 
     return (
         <AuthContainer header="Login">
@@ -39,7 +42,7 @@ const LoginPage: React.FC<IPageProps> = (props) => {
                     name="email"
                     id="email"
                     placeholder="Email Address"
-                    onChange={(event) => setEmail(event.target.value)}
+                    onChange={emailChangeHandler}
                     value={email}
                 />
             </FormGroup>
@@ -50,7 +53,7 @@ const LoginPage: React.FC<IPageProps> = (props) => {
                     name="password"
                     id="password"
                     placeholder="Enter Password"
-                    onChange={(event) => setPassword(event.target.value)}
+                    onChange={passwordChangeHandler}
                     value={password}
                 />
             </FormGroup>
@@ -58,7 +61,7 @@ const LoginPage: React.FC<IPageProps> = (props) => {
                 disabled={authenticating}
                 color="success"
                 block
-                onClick={() => signInWithEmailAndPassword()}
+                onClick={signInWithEmailAndPassword}
             >
                 Login
             </Button>
@@ -71,9 +74,9 @@ const LoginPage: React.FC<IPageProps> = (props) => {
                     <Link to="/forget">Forget your password?</Link>
                 </p>
             </small>
-            <ErrorText error={error} />
+            <ErrorText error={error}/>
         </AuthContainer>
     )
-}
+})
 
 export default LoginPage
